@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Monster Long Potato</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f4f4f9; }
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); color: white; display: flex;
+            flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
+            padding: 20px; box-sizing: border-box;
+        }
+        .btn { background: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay Peringatan GPS -->
+    <div id="overlay">
+        <h2>⚠️ GPS & Lokasi Wajib Diaktifkan!</h2>
+        <p>Aplikasi absensi ini memerlukan akses lokasi Anda yang akurat untuk melanjutkan proses absen.</p>
+        <button class="btn" onclick="cekLokasi()">Aktifkan / Izinkan Lokasi</button>
+    </div>
+
+    <!-- Konten Utama Absen -->
+    <div id="main-content" class="hidden">
+        <h1>Formulir Absensi</h1>
+        <p>Lokasi terdeteksi. Silakan lakukan absensi Anda.</p>
+        <p id="lat-long"></p>
+        <!-- Form absen Anda ditaruh di sini -->
+    </div>
+
+    <script>
+        function cekLokasi() {
+            if (!navigator.geolocation) {
+                alert("Browser Anda tidak mendukung geolokasi.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Sukses mendapatkan lokasi -> GPS Aktif & Diizinkan
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    document.getElementById('overlay').classList.add('hidden');
+                    document.getElementById('main-content').classList.remove('hidden');
+                    document.getElementById('lat-long').innerText = `Koordinat: ${lat}, ${lng}`;
+                    
+                    // Simpan koordinat ke variabel global jika diperlukan untuk dikirim ke Google Sheets
+                    window.userLat = lat;
+                    window.userLng = lng;
+                },
+                function(error) {
+                    // Gagal / Ditolak / GPS Mati
+                    let pesan = "Gagal mendeteksi lokasi.";
+                    if (error.code === error.PERMISSION_DENIED) {
+                        pesan = "Anda harus mengizinkan akses lokasi (GPS) untuk menggunakan absensi ini.";
+                    } else if (error.code === error.POSITION_UNAVAILABLE) {
+                        pesan = "Informasi lokasi tidak tersedia. Pastikan GPS HP Anda aktif.";
+                    } else if (error.code === error.TIMEOUT) {
+                        pesan = "Waktu permintaan lokasi habis. Coba lagi.";
+                    }
+                    alert(pesan);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Cek otomatis saat halaman pertama kali dibuka
+        window.onload = function() {
+            cekLokasi();
+        };
+    </script>
+</body>
+</html>
