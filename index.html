@@ -189,54 +189,7 @@
     </script>
 
 
- <script>
-
-      // ==========================================
-    // FITUR PULL-TO-REFRESH (TARIK UNTUK REFRESH)
-    // ==========================================
-    let touchStartY = 0;
-    const refreshThreshold = 120; // Jarak tarik dalam pixel untuk memicu refresh
-
-    window.addEventListener('touchstart', function(e) {
-      // Hanya aktifkan jika posisi scroll halaman berada di paling atas (scrollTop === 0)
-      if (window.scrollY === 0) {
-        touchStartY = e.touches[0].clientY;
-      }
-    }, { passive: true });
-
-    window.addEventListener('touchmove', function(e) {
-      if (touchStartY === 0) return;
-      const touchY = e.touches[0].clientY;
-      const pulledDistance = touchY - touchStartY;
-
-      // Jika ditarik ke bawah lebih dari batas threshold dan halaman di posisi atas
-      if (pulledDistance > refreshThreshold && window.scrollY === 0) {
-        touchStartY = 0; // Reset agar tidak trigger berulang
-        triggerRefreshAction();
-      }
-    }, { passive: true });
-
-    window.addEventListener('touchend', function() {
-      touchStartY = 0;
-    }, { passive: true });
-
-    function triggerRefreshAction() {
-      showToast('Menyegarkan halaman...');
-      
-      // Cek apakah pengguna sedang berada di halaman Karyawan atau Admin/Owner
-      if (STATE.token && STATE.user) {
-        if (STATE.user.Role === 'KARYAWAN') {
-          loadEmployeeDashboard();
-        } else {
-          loadAdminDashboard();
-        }
-      } else {
-        // Jika belum login, reload seluruh halaman
-        setTimeout(() => location.reload(), 800);
-      }
-    }
-
-      </script>
+ 
   
 </body>
 </html>
