@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4CAF50">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi Monster Long Potato</title>
@@ -79,5 +81,35 @@
             cekLokasi();
         };
     </script>
+ 
+<!-- Tombol Install yang akan muncul jika browser mendukung -->
+<button id="btnInstall" class="btn hidden" style="background: #2196F3; margin-top: 20px;">Klik Untuk Istall Aplikasi</button>
+
+<script>
+    let deferredPrompt;
+    const btnInstall = document.getElementById('btnInstall');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Cegah Chrome menampilkan infobar otomatis standar
+        e.preventDefault();
+        deferredPrompt = e;
+        // Tampilkan tombol kustom Anda
+        btnInstall.classList.remove('hidden');
+
+        btnInstall.addEventListener('click', () => {
+            btnInstall.classList.add('hidden');
+            // Tampilkan prompt instalasi bawaan browser
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Pengguna menerima instalasi shortcut');
+                } else {
+                    console.log('Pengguna menolak instalasi shortcut');
+                }
+                deferredPrompt = null;
+            });
+        });
+    });
+</script>
 </body>
 </html>
